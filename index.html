@@ -1273,7 +1273,7 @@ if (!res.ok) {
 const data = await res.json();
 
 
-    if(data.success){
+    if (data.success || data.ResponseCode === "0") {
       document.getElementById('loadingText').textContent = "STK sent to your phone...";
       
       setTimeout(()=>{
