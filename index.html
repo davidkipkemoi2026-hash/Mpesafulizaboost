@@ -1238,12 +1238,20 @@ document.getElementById('cancelBtn').onclick=()=>hideOverlay('reviewOverlay');
 
 // PAY button → Paystack
 document.getElementById('payBtn').onclick = async () => {
-  const phone = document.getElementById('phoneInput').value;
+  let phone = document.getElementById('phoneInput').value.trim();
 
-  if(!phone){
-    showToast('Enter phone number');
-    return;
-  }
+// normalize phone number
+if (phone.startsWith('+254')) {
+  phone = phone.replace('+', '');
+} else if (phone.startsWith('0')) {
+  phone = '254' + phone.slice(1);
+}
+
+// validate phone (must be 12 digits: 2547XXXXXXXX)
+if (!/^2547\d{8}$/.test(phone)) {
+  showToast('Enter a valid Safaricom number');
+  return;
+}
 
   hideOverlay('reviewOverlay');
   showOverlay('loadingOverlay');
@@ -1257,6 +1265,10 @@ document.getElementById('payBtn').onclick = async () => {
     amount: selected.amount
   })
 });
+
+if (!res.ok) {
+  throw new Error('Server error');
+}
 
 const data = await res.json();
 
